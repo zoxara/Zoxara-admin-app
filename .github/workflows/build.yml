@@ -13,11 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Unzip project files & Fix directory
+      - name: Auto Unzip or Detect Files
         run: |
-          unzip -o zoxara-elite-admin.zip
-          if [ -d "zoxara-elite-admin" ]; then
-            cp -r zoxara-elite-admin/* .
+          ZIP_FILE=$(ls *.zip 2>/dev/null | head -n 1)
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Zip file එකක් හමු විය: $ZIP_FILE. Extract කරමින් පවතී..."
+            unzip -o "$ZIP_FILE"
+            FOLDER_NAME=$(basename "$ZIP_FILE" .zip)
+            if [ -d "$FOLDER_NAME" ]; then
+              cp -r "$FOLDER_NAME"/* .
+            fi
+          else
+            echo "Zip file එකක් නැත. Root එකේ ඇති files සෘජුවම භාවිත කරයි."
           fi
 
       - name: Set up JDK 21
@@ -51,4 +58,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: "**/build/outputs/apk/debug/*.apk" 
+          path: "**/build/outputs/apk/debug/*.apk"
