@@ -36,6 +36,12 @@ jobs:
           mkdir -p app
           echo '{"project_info":{"project_number":"123456789012","project_id":"zoxara-app","storage_bucket":"zoxara-app.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123456789012:android:1234567890123456","android_client_info":{"package_name":"com.aistudio.zoxaraadmin.portal"}},"oauth_client":[],"api_key":[{"current_key":"AIzaSyDummyKeyForBuildOnly"}]}]}' > app/google-services.json
 
+      - name: Auto Generate Debug Keystore
+        run: |
+          mkdir -p app
+          keytool -genkey -v -keystore app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          cp app/debug.keystore ./debug.keystore || true
+
       - name: Build Debug APK
         env:
           GRADLE_OPTS: "-Djava.awt.headless=true -Xmx4096m"
