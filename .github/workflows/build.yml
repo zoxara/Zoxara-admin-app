@@ -26,21 +26,29 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Auto Fix & Build APK
+      - name: Setup Compatible Gradle Wrapper
         run: |
           if [ ! -f "./gradlew" ]; then
-            echo "gradlew file එක නොමැති බැවින් නව wrapper එකක් සාදයි..."
-            gradle wrapper
+            echo "Stable Gradle 8.7 wrapper එකක් සාදයි..."
+            gradle wrapper --gradle-version 8.7
           fi
           chmod +x gradlew
-          ./gradlew assembleDebug
+
+      - name: Auto Create Dummy google-services.json
+        run: |
+          if [ ! -f "app/google-services.json" ]; then
+            echo "Missing google-services.json සඳහා dummy file එකක් සාදයි..."
+            mkdir -p app
+            echo '{"project_info":{"project_number":"123456789012","project_id":"zoxara-app","storage_bucket":"zoxara-app.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123456789012:android:1234567890123456","android_client_info":{"package_name":"com.zoxara.app"}},"oauth_client":[],"api_key":[{"current_key":"AIzaSyDummyKeyForBuildOnly"}]}]}' > app/google-services.json
+          fi
+
+      - name: Build Debug APK
+        env:
+          GRADLE_OPTS: "-Djava.awt.headless=true -Xmx4096m"
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: "**/build/outputs/apk/debug/*.apk"
-          
