@@ -31,13 +31,10 @@ jobs:
           gradle wrapper --gradle-version 9.3.1
           chmod +x gradlew
 
-      - name: Auto Create Dummy google-services.json
+      - name: Auto Create Matched google-services.json
         run: |
-          if [ ! -f "app/google-services.json" ]; then
-            echo "Missing google-services.json සඳහා dummy file එකක් සාදයි..."
-            mkdir -p app
-            echo '{"project_info":{"project_number":"123456789012","project_id":"zoxara-app","storage_bucket":"zoxara-app.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123456789012:android:1234567890123456","android_client_info":{"package_name":"com.zoxara.app"}},"oauth_client":[],"api_key":[{"current_key":"AIzaSyDummyKeyForBuildOnly"}]}]}' > app/google-services.json
-          fi
+          mkdir -p app
+          echo '{"project_info":{"project_number":"123456789012","project_id":"zoxara-app","storage_bucket":"zoxara-app.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123456789012:android:1234567890123456","android_client_info":{"package_name":"com.aistudio.zoxaraadmin.portal"}},"oauth_client":[],"api_key":[{"current_key":"AIzaSyDummyKeyForBuildOnly"}]}]}' > app/google-services.json
 
       - name: Build Debug APK
         env:
